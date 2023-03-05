@@ -7,23 +7,7 @@ import openai
 
 @st.cache_data
 def transcribe(audio_file):
-    format = "wav" if ".wav" in audio_file.name else "mp3"
-    filenames = ["first_quarter." + format, "second_quarter." + format, "third_quarter." + format, "fourth_quarter." + format]
-    quarter = 25 * 60 * 1000
-    audio_file = AudioSegment.from_file(audio_file, format=format)
-
-    first_quarter = audio_file[:quarter]
-    first_quarter.export(filenames[0], format=format)
-
-    second_quarter = audio_file[quarter:quarter * 2]
-    second_quarter.export(filenames[1], format=format)
-
-    third_quarter = audio_file[quarter * 2:quarter * 3]
-    third_quarter.export(filenames[2], format=format)
-
-    fourth_quarter = audio_file[quarter * 3:]
-    fourth_quarter.export(filenames[3], format=format)
-
+    filenames = segment(audio_file)
     transcripts = []
     for filename in filenames:
         audio_file = open(filename, "rb")
@@ -32,6 +16,25 @@ def transcribe(audio_file):
 
     transcript = " ".join(item for item in transcripts)
     return transcript
+
+def segment(audio_file):
+    format = "wav" if ".wav" in audio_file.name else "mp3"
+    # Segment the audio into 15 minute chunks
+    audio_file = AudioSegment.from_file(audio_file, format=format)
+    duration = audio_file.duration_seconds / 60
+    quarter = 15 * 60 * 1000
+    filenames = []
+    segment_number = 0
+    while duration >= 15:
+        segment = audio_file[segment_number * quarter:(segment_number + 1) * quarter]
+        segment.export(f"segment_{segment_number}.{format}", format=format)
+        filenames.append(f"segment_{segment_number}.{format}")
+        duration -= 15
+        segment_number += 1
+    segment = audio_file[segment_number * quarter:]
+    segment.export(f"segment_{segment_number}.{format}", format=format)
+    filenames.append(f"segment_{segment_number}.{format}")
+    return(filenames)
 
 @st.cache_resource
 def get_embeddings(transcript):
