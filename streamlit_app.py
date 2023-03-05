@@ -89,6 +89,13 @@ if audio_file is not None:
     st.spinner("Transcribing audio...")
     transcript = transcribe(audio_file)
 
+    st.download_button(
+        label="Download transcript",
+        data=transcript,
+        file_name="transcript.txt",
+        mime="text/plain"
+    )
+    
     st.spinner("Getting embeddings...")
     texts, docsearch = get_embeddings(transcript)
 
