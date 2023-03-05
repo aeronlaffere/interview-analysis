@@ -126,10 +126,8 @@ if audio_file is not None:
                 temperature=0, openai_api_key=API_KEY), chain_type="stuff", prompt=PROMPT)
             output = chain(
                 {"input_documents": docs, "question": query}, return_only_outputs=True)
-
-        response, sources = extract_sources(output["output_text"])
-
-        st.write(response)
+            response, sources = extract_sources(output["output_text"])
+            st.write(response)
 
         st.write("### Sources")
 
