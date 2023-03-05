@@ -1,5 +1,6 @@
+chromadb
 ffmpeg-python
-streamlit
 langchain[all]
-pydub
 openai
+pydub
+streamlit
