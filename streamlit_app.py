@@ -7,22 +7,22 @@ import openai
 
 @st.cache_data
 def transcribe(audio_file):
-    audio_file = AudioSegment.from_file(audio_file)
+    format = "wav" if ".wav" in audio_file.name else "mp3"
+    filenames = ["first_quarter." + format, "second_quarter." + format, "third_quarter." + format, "fourth_quarter." + format]
     quarter = 25 * 60 * 1000
-
-    filenames = ["first_quarter.wav", "second_quarter.wav", "third_quarter.wav", "fourth_quarter.wav"]
+    audio_file = AudioSegment.from_file(audio_file, format=format)
 
     first_quarter = audio_file[:quarter]
-    first_quarter.export(filenames[0], format="wav")
+    first_quarter.export(filenames[0], format=format)
 
     second_quarter = audio_file[quarter:quarter * 2]
-    second_quarter.export(filenames[1], format="wav")
+    second_quarter.export(filenames[1], format=format)
 
     third_quarter = audio_file[quarter * 2:quarter * 3]
-    third_quarter.export(filenames[2], format="wav")
+    third_quarter.export(filenames[2], format=format)
 
     fourth_quarter = audio_file[quarter * 3:]
-    fourth_quarter.export(filenames[3], format="wav")
+    fourth_quarter.export(filenames[3], format=format)
 
     transcripts = []
     for filename in filenames:
