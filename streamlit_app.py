@@ -10,20 +10,22 @@ def transcribe(audio_file):
     audio_file = AudioSegment.from_file(audio_file)
     quarter = 25 * 60 * 1000
 
+    filenames = ["first_quarter.wav", "second_quarter.wav", "third_quarter.wav", "fourth_quarter.wav"]
+
     first_quarter = audio_file[:quarter]
-    first_quarter.export("first_quarter.wav", format="wav")
+    first_quarter.export(filenames[0], format="wav")
 
     second_quarter = audio_file[quarter:quarter * 2]
-    second_quarter.export("second_quarter.wav", format="wav")
+    second_quarter.export(filenames[1], format="wav")
 
     third_quarter = audio_file[quarter * 2:quarter * 3]
-    third_quarter.export("third_quarter.wav", format="wav")
+    third_quarter.export(filenames[2], format="wav")
 
     fourth_quarter = audio_file[quarter * 3:]
-    fourth_quarter.export("fourth_quarter.wav", format="wav")
+    fourth_quarter.export(filenames[3], format="wav")
 
     transcripts = []
-    for filename in ["first_quarter.wav", "second_quarter.wav", "third_quarter.wav", "fourth_quarter.wav"]:
+    for filename in filenames:
         audio_file = open(filename, "rb")
         transcript = openai.Audio.transcribe("whisper-1", audio_file)
         transcripts.append(transcript["text"])
