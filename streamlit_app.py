@@ -57,10 +57,10 @@ def get_embeddings(transcript):
 def extract_sources(output):
     import re
 
-    response = output.split("\nSOURCES: ")[0]
+    response = output.split("SOURCES:")[0]
 
     source_pattern = r"\d+"
-    sources = re.findall(source_pattern, output)
+    sources = re.findall(source_pattern, output.split("SOURCES:")[1])
     sources = [int(s) for s in sources]
 
     return response, sources
@@ -143,6 +143,7 @@ if audio_file is not None:
                                 You are a helpful assistant. You are an expert in medical science assisting other experts.
                                 You will be given a sample from an interview about a medical topic. You should summarise what was said in the sample in two or three sentences.
                                 It is very important that you keep the summary brief, no more than three sentences. Do not make things up. Accuracy is extremely important.
+                                Also important is that you write in full sentences with professional grammar. You should not use contractions or slang.
                                 """},
                             {"role": "user", "content": texts[source]},
                         ]
