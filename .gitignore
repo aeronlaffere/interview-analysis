@@ -77,7 +77,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-.ipynb
+*.ipynb
 
 # IPython
 profile_default/
@@ -165,5 +165,5 @@ cython_debug/
 chroma_logs.log
 
 # Audio files
-.wav
-.mp3
+*.wav
+*.mp3
