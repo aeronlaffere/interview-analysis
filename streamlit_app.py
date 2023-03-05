@@ -102,8 +102,8 @@ st.subheader("Upload an audio interview file for transcription")
 audio_file = st.file_uploader("Upload an audio file", type=["wav", "mp3"])
 
 if audio_file is not None:
-    st.spinner("Transcribing audio...")
-    transcript = transcribe(audio_file)
+    with st.spinner("Transcribing audio..."):
+        transcript = transcribe(audio_file)
 
     st.download_button(
         label="Download transcript",
@@ -112,8 +112,8 @@ if audio_file is not None:
         mime="text/plain"
     )
 
-    st.spinner("Getting embeddings...")
-    texts, docsearch = get_embeddings(transcript)
+    with st.spinner("Getting embeddings..."):
+        texts, docsearch = get_embeddings(transcript)
 
     st.subheader("Ask questions about the interview")
     query = st.text_input(label="Enter a question:", value="")
@@ -121,10 +121,11 @@ if audio_file is not None:
     if query != "":
         docs = docsearch.similarity_search(query)
 
-        chain = load_qa_with_sources_chain(OpenAI(
-            temperature=0, openai_api_key=API_KEY), chain_type="stuff", prompt=PROMPT)
-        output = chain(
-            {"input_documents": docs, "question": query}, return_only_outputs=True)
+        with st.spinner("Generating answer..."):
+            chain = load_qa_with_sources_chain(OpenAI(
+                temperature=0, openai_api_key=API_KEY), chain_type="stuff", prompt=PROMPT)
+            output = chain(
+                {"input_documents": docs, "question": query}, return_only_outputs=True)
 
         response, sources = extract_sources(output["output_text"])
 
@@ -134,18 +135,18 @@ if audio_file is not None:
 
         for source in sources:
             with st.container():
-                st.spinner("Locating sources...")
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": """
-                            You are a helpful assistant. You are an expert in medical science assisting other experts.
-                            You will be given a sample from an interview about a medical topic. You should summarise what was said in the sample in two or three sentences.
-                            It is very important that you keep the summary brief, no more than three sentences. Do not make things up. Accuracy is extremely important.
-                            """},
-                        {"role": "user", "content": texts[source]},
-                    ]
-                )
-                st.write(response["choices"][0]["message"]["content"])
+                with st.spinner("Locating sources..."):
+                    response = openai.ChatCompletion.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": """
+                                You are a helpful assistant. You are an expert in medical science assisting other experts.
+                                You will be given a sample from an interview about a medical topic. You should summarise what was said in the sample in two or three sentences.
+                                It is very important that you keep the summary brief, no more than three sentences. Do not make things up. Accuracy is extremely important.
+                                """},
+                            {"role": "user", "content": texts[source]},
+                        ]
+                    )
+                    st.write(response["choices"][0]["message"]["content"])
                 with st.expander("Source"):
                     st.write(texts[source])
