@@ -4,9 +4,6 @@ from pydub import AudioSegment
 import streamlit as st
 import openai
 
-API_KEY = "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"
-openai.api_key = API_KEY
-
 @st.cache_data
 def transcribe(audio_file):
     audio_file = AudioSegment.from_file(audio_file)
@@ -55,6 +52,19 @@ def extract_sources(output):
     sources = [int(s) for s in sources]
 
     return response, sources
+
+st.set_page_config(
+    page_title="Interview analysis",
+    page_icon = "📝",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+API_KEY = st.sidebar.text_input("Enter your OpenAI API key:", value="", type="password")
+openai.api_key = API_KEY
+
+st.sidebar.write("You need an OpenAI API key to run this demo. You can get one [here](https://platform.openai.com/signup).")
+st.sidebar.write("This application was developed by [@aeronjl](https://twitter.com/aeronjl) and is open source. You can find the source code [here](https://github.com/aeronlaffere/interview-analysis).")
 
 st.header("Audio transcription")
 st.subheader("Upload an audio interview file for transcription")
